@@ -592,7 +592,11 @@ require('lazy').setup({
                   args = {
                     '--disable=all',
                     '--enable=E0401,E0611',
+<<<<<<< HEAD
                     "--init-hook='activate-venv'",
+=======
+                    '--init-hook=\'import sys; sys.path.append("/Users/doomori/workplace/naia/venv/lib/python3.8/site-packages")\'',
+>>>>>>> 6eb53d6 ([feat] add pylsp config)
                   },
                 },
               },

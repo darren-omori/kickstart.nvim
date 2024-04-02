@@ -562,7 +562,7 @@ require('lazy').setup({
                   args = {
                     '--disable=all',
                     '--enable=E0401,E0611',
-                    '--init-hook=\'import sys; sys.path.append("/Users/doomori/workplace/naia/venv/lib/python3.8/site-packages")\'',
+                    "--init-hook='activate-venv'",
                   },
                 },
               },

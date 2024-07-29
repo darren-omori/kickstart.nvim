@@ -358,7 +358,14 @@ require('lazy').setup({
         --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
         --   },
         -- },
-        -- pickers = {}
+        pickers = {
+          find_files = {
+            additional_args = { '--hidden', '--no-ignore' },
+          },
+          live_grep = {
+            additional_args = { '--hidden', '--no-ignore' },
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -744,7 +751,7 @@ require('lazy').setup({
             luasnip.lsp_expand(args.body)
           end,
         },
-        completion = { completeopt = 'menu,menuone,noinsert' },
+        completion = { completeopt = 'menu,menuone,noinsert,noselect' },
 
         -- For an understanding of why these mappings were
         -- chosen, you will need to read `:help ins-completion`
@@ -752,9 +759,9 @@ require('lazy').setup({
         -- No, but seriously. Please read `:help ins-completion`, it is really good!
         mapping = cmp.mapping.preset.insert {
           -- Select the [n]ext item
-          ['<C-n>'] = cmp.mapping.select_next_item(),
+          ['<Tab>'] = cmp.mapping.select_next_item(),
           -- Select the [p]revious item
-          ['<C-p>'] = cmp.mapping.select_prev_item(),
+          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
 
           -- Scroll the documentation window [b]ack / [f]orward
           ['<C-b>'] = cmp.mapping.scroll_docs(-4),
@@ -763,7 +770,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<CR>'] = cmp.mapping.confirm { select = false },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines

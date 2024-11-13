@@ -420,7 +420,9 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-      vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader><leader>', function()
+        builtin.buffers { sort_mru = true, ignore_current_buffer = true }
+      end, { desc = '[ ] Find existing buffers' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -627,7 +629,7 @@ require('lazy').setup({
                   select = { 'ALL' },
                   -- Iteratively add to this list to ignore rules
                   ignore = { 'D', 'ANN101', 'ANN204', 'FA' },
-                  lineLength = 100,
+                  -- lineLength = 100,
                 },
                 mypy = {
                   enabled = true,
@@ -687,6 +689,7 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'eslint_d', -- Used to lint typescript,
         'prettierd', -- Used to format typescript,
+        -- 'checkstyle', -- Used to lint java
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -699,6 +702,30 @@ require('lazy').setup({
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
+          end,
+          jdtls = function()
+            require('lspconfig').jdtls.setup {
+              on_attach = function()
+                local bemol_dir = vim.fs.find({ '.bemol' }, { upward = true, type = 'directory' })[1]
+                local ws_folders_lsp = {}
+                if bemol_dir then
+                  local file = io.open(bemol_dir .. '/ws_root_folders', 'r')
+                  if file then
+                    for line in file:lines() do
+                      table.insert(ws_folders_lsp, line)
+                    end
+                    file:close()
+                  end
+                end
+                for _, line in ipairs(ws_folders_lsp) do
+                  vim.lsp.buf.add_workspace_folder(line)
+                end
+              end,
+              cmd = {
+                'jdtls',
+                '--jvm-arg=-javaagent:' .. require('mason-registry').get_package('jdtls'):get_install_path() .. '/lombok.jar',
+              },
+            }
           end,
         },
       }
@@ -740,11 +767,12 @@ require('lazy').setup({
       formatters_by_ft = {
         lua = { 'stylua' },
         typescript = { 'prettierd' },
+        -- java = { 'google-java-format' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        -- javascript = { "prettier", stop_after_first = true },
       },
     },
   },
@@ -882,7 +910,7 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'tokyonight-storm'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'

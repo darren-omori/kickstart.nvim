@@ -34,14 +34,10 @@ return { -- LSP Plugins
           },
         },
       },
-
       {
-        url = 'doomori@git.amazon.com:pkg/NinjaHooks',
-        branch = 'mainline',
-        lazy = false,
-        config = function(plugin)
-          vim.opt.rtp:prepend(plugin.dir .. '/configuration/vim/amazon/brazil-config')
-        end,
+        url = "ssh://git.amazon.com/pkg/VimBrazilConfig",
+        branch = "mainline",
+        ft = "brazil-config",
       },
 
       -- Allows extra capabilities provided by blink.cmp

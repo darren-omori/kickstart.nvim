@@ -381,11 +381,12 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
+        defaults = {
+          mappings = {
+            i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          },
+          path_display = { 'truncate' },
+        },
         pickers = {
           find_files = {
             additional_args = { '--hidden', '--no-ignore' },
@@ -398,11 +399,20 @@ require('lazy').setup({
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
           },
+          project = {
+            base_dirs = { { path = '~/workplace', max_depth = 4 } },
+            on_project_selected = function(prompt_bufnr)
+              -- Do anything you want in here. For example:
+              require('telescope._extensions.project.actions').change_working_directory(prompt_bufnr, false)
+            end,
+          },
         },
       }
 
       -- Enable Telescope extensions if they are installed
       pcall(require('telescope').load_extension, 'fzf')
+      local stats, err = pcall(require('telescope').load_extension 'project')
+      print(err.code)
       pcall(require('telescope').load_extension, 'ui-select')
 
       -- See `:help telescope.builtin`
@@ -445,6 +455,11 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
+      -- Shortcut for opening projects
+      vim.keymap.set('n', '<leader>sp', function()
+        require('telescope').extensions.project.project {}
+      end, { desc = '[S]earch [P]rojects' })
     end,
   },
 
@@ -473,12 +488,53 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      {
+        'j-hui/fidget.nvim',
+        opts = {
+          notification = {
+            window = {
+              winblend = 0, -- Background color opacity in the notification window
+            },
+          },
+        },
+      },
+
+      {
+        url = 'doomori@git.amazon.com:pkg/NinjaHooks',
+        branch = 'mainline',
+        lazy = false,
+        config = function(plugin)
+          vim.opt.rtp:prepend(plugin.dir .. '/configuration/vim/amazon/brazil-config')
+        end,
+      },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
     },
     config = function()
+      local lspconfig = require 'lspconfig'
+      local configs = require 'lspconfig.configs'
+
+      vim.filetype.add {
+        filename = {
+          ['Config'] = function()
+            vim.b.brazil_package_Config = 1
+            return 'brazil-config'
+          end,
+        },
+      }
+
+      configs.barium = {
+        default_config = {
+          cmd = { 'barium' },
+          filetypes = { 'brazil-config' },
+          root_dir = function(fname)
+            return lspconfig.util.find_git_ancestor(fname)
+          end,
+          settings = {},
+        },
+      }
+      lspconfig.barium.setup {}
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -915,16 +971,39 @@ require('lazy').setup({
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
+    -- config = function()
+    --   require('tokyonight').setup {
+    --     transparent = false,
+    --     styles = {
+    --       sidebars = 'transparent',
+    --       floats = 'transparent',
+    --     },
+    --   }
+    -- end,
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-storm'
+      vim.cmd.colorscheme 'catppuccin-macchiato'
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
   },
+
+  -- {
+  --   'gbprod/nord.nvim',
+  --   lazy = false,
+  --   priority = 1000,
+  --   config = function()
+  --     require('nord').setup {}
+  --     vim.cmd.colorscheme 'nord'
+  --   end,
+  -- },
+  -- { 'rebelot/kanagawa.nvim' },
+  -- { 'neanias/everforest-nvim' },
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  { 'Shatur/neovim-ayu' },
 
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },

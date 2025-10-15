@@ -72,20 +72,11 @@ return { -- Fuzzy Finder (files, lsp, etc)
         ['ui-select'] = {
           require('telescope.themes').get_dropdown(),
         },
-        project = {
-          base_dirs = { { path = '~/workplace', max_depth = 4 } },
-          on_project_selected = function(prompt_bufnr)
-            -- Do anything you want in here. For example:
-            require('telescope._extensions.project.actions').change_working_directory(prompt_bufnr, false)
-          end,
-        },
       },
     }
 
     -- Enable Telescope extensions if they are installed
     pcall(require('telescope').load_extension, 'fzf')
-    local stats, err = pcall(require('telescope').load_extension 'project')
-    print(err.code)
     pcall(require('telescope').load_extension, 'ui-select')
 
     -- See `:help telescope.builtin`

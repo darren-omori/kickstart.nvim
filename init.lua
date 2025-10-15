@@ -1,8 +1,4 @@
---[[
-
-Core config
-
---]]
+--[[ Core Config ]]
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -22,8 +18,5 @@ require 'keymaps'
 -- [[ Basic Autocommands ]]
 require 'autocommands'
 
--- [[ Install `lazy.nvim` plugin manager ]]
-require 'install-lazy'
-
--- [[ Configure and install plugins ]]
-require 'install-plugins'
+-- [[ Install `lazy.nvim` plugin manager and configure plugins ]]
+require 'lazy-plugins'

@@ -47,26 +47,6 @@ return { -- LSP Plugins
       local lspconfig = require 'lspconfig'
       local configs = require 'lspconfig.configs'
 
-      vim.filetype.add {
-        filename = {
-          ['Config'] = function()
-            vim.b.brazil_package_Config = 1
-            return 'brazil-config'
-          end,
-        },
-      }
-
-      configs.barium = {
-        default_config = {
-          cmd = { 'barium' },
-          filetypes = { 'brazil-config' },
-          root_dir = function(fname)
-            return lspconfig.util.find_git_ancestor(fname)
-          end,
-          settings = {},
-        },
-      }
-      lspconfig.barium.setup {}
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -227,6 +207,7 @@ return { -- LSP Plugins
             return diagnostic_message[diagnostic.severity]
           end,
         },
+        virtual_lines = { current_line = true }
       }
 
       -- LSP servers and clients are able to communicate to each other what features they support.
@@ -302,6 +283,16 @@ return { -- LSP Plugins
         },
       }
 
+      for server_name, server_config in pairs(servers) do
+        server_config.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server_config.capabilities or {})
+        vim.lsp.config(server_name, server_config)
+        vim.lsp.enable(server_name)
+      end
+
+      vim.lsp.enable({
+        'brazil-config',
+      })
+
       -- Ensure the servers and tools above are installed
       --
       -- To check the current status of installed tools and/or manually install
@@ -320,48 +311,10 @@ return { -- LSP Plugins
         'stylua', -- Used to format Lua code
         'eslint_d', -- Used to lint typescript,
         'prettierd', -- Used to format typescript,
+        'jdtls',
         -- 'checkstyle', -- Used to lint java
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-
-      require('mason-lspconfig').setup {
-        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-        automatic_installation = false,
-        handlers = {
-          function(server_name)
-            local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for ts_ls)
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-          end,
-          jdtls = function()
-            require('lspconfig').jdtls.setup {
-              on_attach = function()
-                local bemol_dir = vim.fs.find({ '.bemol' }, { upward = true, type = 'directory' })[1]
-                local ws_folders_lsp = {}
-                if bemol_dir then
-                  local file = io.open(bemol_dir .. '/ws_root_folders', 'r')
-                  if file then
-                    for line in file:lines() do
-                      table.insert(ws_folders_lsp, line)
-                    end
-                    file:close()
-                  end
-                end
-                for _, line in ipairs(ws_folders_lsp) do
-                  vim.lsp.buf.add_workspace_folder(line)
-                end
-              end,
-              cmd = {
-                'jdtls',
-                '--jvm-arg=-javaagent:' .. require('mason-registry').get_package('jdtls'):get_install_path() .. '/lombok.jar',
-              },
-            }
-          end,
-        },
-      }
     end,
   },
 }

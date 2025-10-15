@@ -54,7 +54,7 @@ return { -- Autocompletion
       },
 
       ['<CR>'] = { 'accept', 'fallback' },
-      ['<Esc>'] = { 'hide', 'fallback' },
+      ['<Esc>'] = { 'cancel', 'fallback' },
       ['<PageUp>'] = { 'scroll_documentation_up', 'fallback' },
       ['<PageDn>'] = { 'scroll_documentation_down', 'fallback' },
     },

@@ -35,9 +35,9 @@ return { -- LSP Plugins
         },
       },
       {
-        url = "ssh://git.amazon.com/pkg/VimBrazilConfig",
-        branch = "mainline",
-        ft = "brazil-config",
+        url = 'ssh://git.amazon.com/pkg/VimBrazilConfig',
+        branch = 'mainline',
+        ft = 'brazil-config',
       },
 
       -- Allows extra capabilities provided by blink.cmp
@@ -207,7 +207,7 @@ return { -- LSP Plugins
             return diagnostic_message[diagnostic.severity]
           end,
         },
-        virtual_lines = { current_line = true }
+        virtual_lines = { current_line = true },
       }
 
       -- LSP servers and clients are able to communicate to each other what features they support.
@@ -289,9 +289,9 @@ return { -- LSP Plugins
         vim.lsp.enable(server_name)
       end
 
-      vim.lsp.enable({
+      vim.lsp.enable {
         'brazil-config',
-      })
+      }
 
       -- Ensure the servers and tools above are installed
       --

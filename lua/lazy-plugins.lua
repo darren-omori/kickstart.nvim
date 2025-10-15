@@ -21,18 +21,18 @@ rtp:prepend(lazypath)
 --    :Lazy update
 --
 -- NOTE: Here is where you install your plugins.
-require('lazy').setup({
+require('lazy').setup {
   spec = {
     -- import your plugins
-    { import = "plugins" },
+    { import = 'plugins' },
   },
 
   performance = {
     rtp = {
       disabled_plugins = {
-        'indent-line'
-      }
-    }
+        'indent-line',
+      },
+    },
   },
 
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
@@ -66,7 +66,7 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
-})
+}
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

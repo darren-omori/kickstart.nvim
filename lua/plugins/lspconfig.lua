@@ -312,6 +312,8 @@ return { -- LSP Plugins
         'eslint_d', -- Used to lint typescript,
         'prettierd', -- Used to format typescript,
         'jdtls',
+        'java-test',
+        'java-debug-adapter',
         -- 'checkstyle', -- Used to lint java
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }

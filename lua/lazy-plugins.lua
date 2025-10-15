@@ -30,7 +30,7 @@ require('lazy').setup {
   performance = {
     rtp = {
       disabled_plugins = {
-        'indent-line',
+        -- 'indent-blankline.nvim',
       },
     },
   },

@@ -31,7 +31,6 @@ return {
       'JdtWipeDataAndRestart',
     },
     config = function()
-      local lspconfig = require 'lspconfig'
       local bundles = {
         vim.fn.expand('$MASON/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar', true),
       }

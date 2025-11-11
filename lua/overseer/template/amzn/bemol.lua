@@ -1,12 +1,12 @@
 local overseer = require 'overseer'
 
-local function find_package_root(dir)
-  local config = vim.fs.find('Config', {
+local function find_workspace_root(dir)
+  local packageInfo = vim.fs.find('packageInfo', {
     upward = true,
     path = dir,
   })[1]
-  local package_dir = vim.fs.dirname(config)
-  return package_dir
+  local workspace_dir = vim.fs.dirname(packageInfo)
+  return workspace_dir
 end
 
 -- local function dump(o)
@@ -46,42 +46,24 @@ local java_parser = {
 
 
 
---stylua: ignore
 return {
-  generator = function(search, cb)
-    local tasks = {}
-    local commands = {
-      { name = "brazil-build", args = { "release" } },
-      { name = "brazil-build test", args = { "test" } },
-      { name = "brazil-build clean", args = { "clean" } },
-    }
-
-    local cwd = find_package_root(vim.fs.dirname(vim.fn.expand "%:p"))
-
-    for _, cmd in ipairs(commands) do
-      table.insert(tasks, {
-        name = cmd.name,
-        builder = function()
-          return {
-            cmd = { "brazil-build" },
-            args = cmd.args,
-            cwd = cwd,
-            components = {
-              'default',
-              { "on_output_parse", parser = java_parser },
-              { "on_result_diagnostics_quickfix", open = true },
-            },
-          }
-        end,
-        tags = { overseer.TAG.BUILD },
-      })
-    end
-
-    cb(tasks)
+  name = "bemol",
+  builder = function()
+    local cwd = find_workspace_root(vim.fs.dirname(vim.fn.expand "%:p"))
+    return {
+      cmd = { '/apollo/env/envImprovement/bin/tmux'},
+      args = { "new-session", "-A", "-s", vim.fn.fnamemodify(cwd, ":t").."-bemol", "bemol --verbose --watch"},
+      cwd = cwd,
+      components = {
+        'default',
+	{ "on_output_parse", parser = java_parser },
+	{ "on_result_diagnostics_quickfix", open = true },
+		},
+	}
   end,
   condition = {
     callback = function(opts)
-      return find_package_root(opts.dir) ~= nil
+      return find_workspace_root(opts.dir) ~= nil
     end,
-  },
+  }
 }

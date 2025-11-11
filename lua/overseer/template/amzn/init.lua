@@ -1,1 +1,1 @@
-return { 'amzn.brazil-build' }
+return { 'amzn.brazil-build', 'amzn.bemol' }

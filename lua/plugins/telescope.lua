@@ -4,6 +4,16 @@
 -- you do for a plugin at the top level, you can do for a dependency.
 --
 -- Use the `dependencies` key to specify the dependencies of a particular plugin
+--
+
+local function find_workspace_root(dir)
+  local packageInfo = vim.fs.find('packageInfo', {
+    upward = true,
+    path = dir,
+  })[1]
+  local workspace_dir = vim.fs.dirname(packageInfo)
+  return workspace_dir
+end
 
 return { -- Fuzzy Finder (files, lsp, etc)
   'nvim-telescope/telescope.nvim',
@@ -88,7 +98,7 @@ return { -- Fuzzy Finder (files, lsp, etc)
       builtin.find_files { hidden = true }
     end, { desc = '[S]earch [F]iles' })
     vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
-    vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
+    -- vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
     vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
     vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
@@ -120,9 +130,19 @@ return { -- Fuzzy Finder (files, lsp, etc)
       builtin.find_files { cwd = vim.fn.stdpath 'config' }
     end, { desc = '[S]earch [N]eovim files' })
 
+    -- Shortcut for searching your amazon workspace
+    vim.keymap.set('n', '<leader>sw', function()
+      builtin.find_files { cwd = find_workspace_root(find_workspace_root(vim.fs.dirname(vim.fn.expand "%:p"))
+) }
+    end, { desc = '[S]earch [W]orkspace' })
+
     -- Shortcut for opening projects
     vim.keymap.set('n', '<leader>sp', function()
       require('telescope').extensions.project.project {}
     end, { desc = '[S]earch [P]rojects' })
+
+
+
+
   end,
 }

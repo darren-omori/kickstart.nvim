@@ -229,6 +229,7 @@ return { -- LSP Plugins
         -- clangd = {},
         -- gopls = {},
         -- pyright = {},
+        jsonls = {},
         pylsp = {
           settings = {
             pylsp = {
@@ -314,6 +315,7 @@ return { -- LSP Plugins
         'jdtls',
         'java-test',
         'java-debug-adapter',
+        'jq'
         -- 'checkstyle', -- Used to lint java
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }

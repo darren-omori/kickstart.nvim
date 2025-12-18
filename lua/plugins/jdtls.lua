@@ -34,6 +34,14 @@ return {
       local bundles = {
         vim.fn.expand('$MASON/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar', true),
       }
+      
+      local root_dir = vim.fs.root(vim.api.nvim_buf_get_name(0), { ".git" })
+
+      -- How to find the project name for a given root dir.
+      local project_name = function(root_dir)
+        return root_dir and vim.fs.basename(root_dir)
+      end
+
       vim.list_extend(bundles, vim.split(vim.fn.glob('$MASON/packages/java-test/extension/server/*.jar', true), '\n'))
       vim.lsp.config('jdtls', {
         filetypes = { 'java' },
@@ -41,6 +49,8 @@ return {
         cmd = {
           'jdtls',
           '--jvm-arg=' .. '-javaagent:' .. vim.fn.expand '$MASON/packages/jdtls/lombok.jar' .. '',
+          '--configuration ./config_linux',
+          '--data ' .. os.getenv("HOME") .. "/.cache/jdtls/" .. project_name(root_dir) .. "/workspace"
         },
         init_options = {
           bundles = bundles,

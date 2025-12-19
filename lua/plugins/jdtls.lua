@@ -49,8 +49,10 @@ return {
         cmd = {
           'jdtls',
           '--jvm-arg=' .. '-javaagent:' .. vim.fn.expand '$MASON/packages/jdtls/lombok.jar' .. '',
-          '--configuration ./config_linux',
-          '--data ' .. os.getenv("HOME") .. "/.cache/jdtls/" .. project_name(root_dir) .. "/workspace"
+          '--configuration',
+          './config_linux',
+          '--data ',
+          os.getenv("HOME") .. "/.cache/jdtls/" .. project_name(root_dir) .. "/workspace"
         },
         init_options = {
           bundles = bundles,
